@@ -149,7 +149,8 @@ def generate_hw03(question2, question3):
             month = int(match2.group(2))
             # Create a RunnableWithMessageHistory to store the previous result
             previous_result = json.loads(generate_hw02(question2))
-            previous_holidays = [holiday["name"] for holiday in previous_result["Result"]]
+#            previous_result = json.loads(generate_hw02(question2)["Result"])
+            previous_holidays = [holiday["name"] for holiday in previous_result.get("Result", [])]
 
             # Extract date and name from question3
             new_holiday = json.loads(question3)
@@ -160,11 +161,11 @@ def generate_hw03(question2, question3):
                 add = False
                 reason = f'{new_holiday["name"]}已包含在{month}月的節日清單中。'
             
-            return json.dumps({"Result": {"add": add, "reason": reason}}, ensure_ascii=False, indent=4)
+            return json.dumps({"Result": [{"add": add, "reason": reason}]}, ensure_ascii=False, indent=4)
         else:
-            return json.dumps({"Result": {"add": False, "reason": "Invalid question format for question2"}}, ensure_ascii=False, indent=4)
+            return json.dumps({"Result": [{"add": False, "reason": "Invalid question format for question2"}]}, ensure_ascii=False, indent=4)
     except Exception as e:
-        return json.dumps({"Result": {"add": False, "reason": str(e)}}, ensure_ascii=False, indent=4)
+        return json.dumps({"Result": [{"add": add, "reason": reason}]}, ensure_ascii=False, indent=4)
 #    pass
     
 def generate_hw04(question):
@@ -187,14 +188,19 @@ def demo(question):
 
 # Test the function
 question = "2024年台灣10月紀念日有哪些?"
+
 #print(f"作業1答案...")
 #response = generate_hw01(question)
+#print(response)
+
 #print(f"作業2答案...")
 #response = generate_hw02(question)
+#print(response)
+
 question2 = "2024年台灣10月紀念日有哪些?"
 question3 = '{"date": "10-31", "name": "蔣公誕辰紀念日"}'
 result_hw02 = generate_hw02(question2)
-print(f"作業2結果: {result_hw02}")
+#print(f"作業2結果: {result_hw02}")
 print(f"作業3答案...")
 response = generate_hw03(question2, question3)
 print(response)
