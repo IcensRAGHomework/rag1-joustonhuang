@@ -115,7 +115,7 @@ def generate_hw02(question):
         return json.dumps({"Result": [], "error": str(e)}, ensure_ascii=False, indent=4)
 #    pass
 
-def generate_hw03(question2, question3):
+def generate_hw03(question1, question2):
     prompt_template = get_prompt_template()
     store = {}
     history = ChatMessageHistory()
@@ -141,17 +141,17 @@ def generate_hw03(question2, question3):
         history_key="chat_history",
     )
     try:
-        # Extract year and month from the question2
-        match2 = re.search(r'(\d{4})年台灣(\d{1,2})月', question2)
+        # Extract year and month from the question1
+        match2 = re.search(r'(\d{4})年台灣(\d{1,2})月', question1)
         if match2:
             year = int(match2.group(1))
             month = int(match2.group(2))
             # Create a RunnableWithMessageHistory to store the previous result
-            previous_result = json.loads(generate_hw02(question2))
+            previous_result = json.loads(generate_hw02(question1))
             previous_holidays = [holiday["name"] for holiday in previous_result["Result"]]
 
-            # Extract date and name from question3
-            new_holiday = json.loads(question3)
+            # Extract date and name from question2
+            new_holiday = json.loads(question2)
             if new_holiday["name"] not in previous_holidays:
                 add = True
                 reason = f'{new_holiday["name"]}並未包含在{month}月的節日清單中。目前{month}月的現有節日包括{", ".join(previous_holidays)}。因此，如果該日被認定為節日，應該將其新增至清單中。'
@@ -161,7 +161,7 @@ def generate_hw03(question2, question3):
             
             return json.dumps({"Result": {"add": add, "reason": reason}}, ensure_ascii=False, indent=4)
         else:
-            return json.dumps({"Result": {"add": False, "reason": "Invalid question format for question2"}}, ensure_ascii=False, indent=4)
+            return json.dumps({"Result": {"add": False, "reason": "Invalid question format for question1"}}, ensure_ascii=False, indent=4)
     except Exception as e:
         return json.dumps({"Result": {"add": False, "reason": str(e)}}, ensure_ascii=False, indent=4)
 #    pass
@@ -185,20 +185,21 @@ def demo(question):
 #    pass
 
 # Test the function
-#question = "2024年台灣10月紀念日有哪些?"
+question = "2024年台灣10月紀念日有哪些?"
+
 #question = "請問中華台北的積分是多少"
 #print(f"作業1答案...")
 #response = generate_hw01(question)
-#print(f"作業2答案...")
-#response = generate_hw02(question)
+print(f"作業2答案...")
+# response = generate_hw02(question)
 print(f"作業3答案...")
-question2 = "2024年台灣10月紀念日有哪些?"
-question3 = '{"date": "10-31", "name": "蔣公誕辰紀念日"}'
-result_hw02 = generate_hw02(question2)
+question1 = "2024年台灣10月紀念日有哪些?"
+question2 = '{"date": "10-31", "name": "蔣公誕辰紀念日"}'
+result_hw02 = generate_hw02(question)
 print(f"作業2結果: {result_hw02}")
-new_holiday = json.loads(question3)
+new_holiday = json.loads(question2)
 print(f"測試節日: {new_holiday['name']}")
-response = generate_hw03(question2, question3)
+response = generate_hw03(question1, question2)
 print(response)
 #print(f"作業4答案...")
 #response = generate_hw04(question)
