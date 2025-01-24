@@ -116,6 +116,7 @@ def generate_hw02(question):
 #    pass
 
 def generate_hw03(question2, question3):
+    new_holiday = json.loads(question3)
     prompt_template = get_prompt_template()
     store = {}
     history = ChatMessageHistory()
@@ -185,20 +186,19 @@ def demo(question):
 #    pass
 
 # Test the function
-#question = "2024年台灣10月紀念日有哪些?"
-#question = "請問中華台北的積分是多少"
+question = "2024年台灣10月紀念日有哪些?"
 #print(f"作業1答案...")
 #response = generate_hw01(question)
 #print(f"作業2答案...")
 #response = generate_hw02(question)
-print(f"作業3答案...")
 question2 = "2024年台灣10月紀念日有哪些?"
 question3 = '{"date": "10-31", "name": "蔣公誕辰紀念日"}'
 result_hw02 = generate_hw02(question2)
 print(f"作業2結果: {result_hw02}")
-new_holiday = json.loads(question3)
-print(f"測試節日: {new_holiday['name']}")
+print(f"作業3答案...")
 response = generate_hw03(question2, question3)
 print(response)
+
 #print(f"作業4答案...")
+#question = "請問中華台北的積分是多少"
 #response = generate_hw04(question)
