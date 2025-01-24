@@ -152,19 +152,21 @@ def generate_hw03(question2, question3):
             previous_holidays = [holiday["name"] for holiday in previous_result["Result"]]
 
             # Extract date and name from question3
-            new_holiday = json.loads(question3[question3.find('{'):])
+            new_holiday_json = question3[question3.find("{"):]  # Extract the JSON part
+            new_holiday = json.loads(new_holiday_json)
             if new_holiday["name"] not in previous_holidays:
                 add = True
                 reason = f'{new_holiday["name"]}並未包含在{month}月的節日清單中。目前{month}月的現有節日包括{", ".join(previous_holidays)}。因此，如果該日被認定為節日，應該將其新增至清單中。'
             else:
                 add = False
-                reason = f'{new_holiday["name"]}已包含在{month}月的節日清單中。'
+                reason = f'{new_holiday["name"]}已包含在{month}月的節日清單中。目前{month}月的現有節日包括{", ".join(previous_holidays)}。因此，不應該將其新增至清單中。'
             
             return json.dumps({"Result": [{"add": add, "reason": reason}]}, ensure_ascii=False, indent=4)
         else:
             return json.dumps({"Result": [{"add": False, "reason": "Invalid question format for question2"}]}, ensure_ascii=False, indent=4)
     except Exception as e:
-        return json.dumps({"Result": [{"add": add, "reason": reason}]}, ensure_ascii=False, indent=4)
+        return json.dumps({"Result": [{"add": False, "reason": str(e)}]}, ensure_ascii=False, indent=4)
+
 #    pass
     
 def generate_hw04(question):
@@ -192,12 +194,12 @@ question = "2024年台灣10月紀念日有哪些?"
 #response = generate_hw01(question)
 #print(response)
 
-#print(f"作業2答案...")
-#response = generate_hw02(question)
-#print(response)
+print(f"作業2答案...")
+response = generate_hw02(question)
+print(response)
 
 question2 = "2024年台灣10月紀念日有哪些?"
-question3 = '{"date": "10-31", "name": "蔣公誕辰紀念日"}'
+question3 = '{"date": "10-31", "name": "萬聖節"}'
 result_hw02 = generate_hw02(question2)
 #print(f"作業2結果: {result_hw02}")
 print(f"作業3答案...")
