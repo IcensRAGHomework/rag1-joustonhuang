@@ -190,15 +190,15 @@ question = "2024年台灣10月紀念日有哪些?"
 #question = "請問中華台北的積分是多少"
 #print(f"作業1答案...")
 #response = generate_hw01(question)
-print(f"作業2答案...")
+#print(f"作業2答案...")
 # response = generate_hw02(question)
-print(f"作業3答案...")
+#print(f"作業3答案...")
 question1 = "2024年台灣10月紀念日有哪些?"
 question2 = '{"date": "10-31", "name": "蔣公誕辰紀念日"}'
-result_hw02 = generate_hw02(question)
-print(f"作業2結果: {result_hw02}")
-new_holiday = json.loads(question2)
-print(f"測試節日: {new_holiday['name']}")
+#result_hw02 = generate_hw02(question)
+#print(f"作業2結果: {result_hw02}")
+#new_holiday = json.loads(question2)
+#print(f"測試節日: {new_holiday['name']}")
 response = generate_hw03(question1, question2)
 print(response)
 #print(f"作業4答案...")
