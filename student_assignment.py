@@ -148,7 +148,8 @@ def generate_hw03(question2, question3):
             year = int(match2.group(1))
             month = int(match2.group(2))
             # Create a RunnableWithMessageHistory to store the previous result
-            previous_result = json.loads(generate_hw02(question2))
+#            previous_result = json.loads(generate_hw02(question2))
+            previous_result = json.loads(generate_hw02(question))
             previous_holidays = [holiday["name"] for holiday in previous_result["Result"]]
 
             # Extract date and name from question3
@@ -194,13 +195,14 @@ question = "2024年台灣10月紀念日有哪些?"
 #response = generate_hw01(question)
 #print(response)
 
-print(f"作業2答案...")
-response = generate_hw02(question)
-print(response)
+#print(f"作業2答案...")
+#response = generate_hw02(question)
+#print(response)
 
 question2 = "2024年台灣10月紀念日有哪些?"
-question3 = '{"date": "10-31", "name": "萬聖節"}'
-result_hw02 = generate_hw02(question2)
+question3 = '{"date": "10-31", "name": "蔣公誕辰紀念日"}'
+#question3 = '{"date": "10-31", "name": "萬聖節"}'
+#result_hw02 = generate_hw02(question2)
 #print(f"作業2結果: {result_hw02}")
 print(f"作業3答案...")
 response = generate_hw03(question2, question3)
