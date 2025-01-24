@@ -172,7 +172,7 @@ def generate_hw03(question2, question3):
 
             else:
                 add = False
-                reason = f'{new_holiday["name"]}已包含在{number_translate_to_chinese(str(month))}月的節日清單中。目前{translate_to_chinese(str(month))}月的現有節日包括{", ".join(previous_holidays)}。因此，不應該將其新增至清單中。'
+                reason = f'{new_holiday["name"]}已包含在{number_translate_to_chinese(str(month))}月的節日清單中。目前{number_translate_to_chinese(str(month))}月的現有節日包括{", ".join(previous_holidays)}。因此，不應該將其新增至清單中。'
 #            return json.dumps({"Result": {"add": add, "reason": reason}}, ensure_ascii=False, indent=4)
             result_dict = {
                 "Result": {
@@ -228,8 +228,8 @@ question = "2024年台灣10月紀念日有哪些?"
 #print(response)
 
 question2 = "2024年台灣10月紀念日有哪些?"
-question3 = '{"date": "10-31", "name": "蔣公誕辰紀念日"}'
-#question3 = '{"date": "10-31", "name": "萬聖節"}'
+#question3 = '{"date": "10-31", "name": "蔣公誕辰紀念日"}'
+question3 = '{"date": "10-31", "name": "萬聖節"}'
 #result_hw02 = generate_hw02(question2)
 #print(f"作業2結果: {result_hw02}")
 print(f"作業3答案...")
