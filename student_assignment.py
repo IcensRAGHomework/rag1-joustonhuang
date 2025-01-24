@@ -4,12 +4,15 @@ import traceback
 #HW02用的函式
 import re
 import requests # type: ignore
-
 from model_configurations import get_model_configuration
-
 from langchain_openai import AzureChatOpenAI # type: ignore
-from langchain_core.messages import HumanMessage, SystemMessage # type: ignore
 
+#HW03用的函式
+from langchain_core.messages import AIMessage, HumanMessage, SystemMessage # type: ignore
+from langchain_core.runnables.history import RunnableWithMessageHistory # type: ignore
+from langchain_community.chat_message_histories import ChatMessageHistory # type: ignore
+from langchain_core.chat_history import BaseChatMessageHistory # type: ignore
+# from langchain_core.agents import create_openai_functions_agent # type: ignore
 
 gpt_chat_version = 'gpt-4o'
 gpt_config = get_model_configuration(gpt_chat_version)
@@ -65,7 +68,6 @@ def generate_hw01(question):
         return {"Result": []}
 
 #HW 02用的函式
-
 def translate_to_chinese(english_text):
     llm = use_llm()
     prompt = f"Translate the following holiday name to Traditional Chinese: {english_text}"
@@ -89,7 +91,7 @@ def get_memorial_days(year, month):
                 chinese_name = translate_to_chinese(english_name)
                 result.append({
                     "date": holiday["date"]["iso"],
-                    "name": chinese_name
+                    "name": chinese_name.split("is translated to Traditional Chinese as ")[-1]
             })
             return {"Result": result}
         else:
@@ -112,9 +114,57 @@ def generate_hw02(question):
     except Exception as e:
         return json.dumps({"Result": [], "error": str(e)}, ensure_ascii=False, indent=4)
 #    pass
-        
+
 def generate_hw03(question2, question3):
-    pass
+    prompt_template = get_prompt_template()
+    store = {}
+    history = ChatMessageHistory()
+    def get_session_history(session_id: str) -> BaseChatMessageHistory:
+        if session_id not in store:
+            store[session_id] = ChatMessageHistory()
+        return store.get(session_id, ChatMessageHistory())
+    tools = ()  # Define your tools here if any
+    model = use_llm()  # Define your model
+    # Mock executor for example purposes
+    class MockExecutor:
+        def with_listeners(self, on_end):
+            return self
+        def with_alisteners(self, on_end):
+            return self
+        def invoke(self, input):
+            return input
+    agent_executor = MockExecutor()
+    agent_with_chat_history = RunnableWithMessageHistory(
+        agent_executor.with_listeners(on_end=None).with_alisteners(on_end=None),
+        get_session_history,
+        input_key="input",
+        history_key="chat_history",
+    )
+    try:
+        # Extract year and month from the question2
+        match2 = re.search(r'(\d{4})年台灣(\d{1,2})月', question2)
+        if match2:
+            year = int(match2.group(1))
+            month = int(match2.group(2))
+            # Create a RunnableWithMessageHistory to store the previous result
+            previous_result = json.loads(generate_hw02(question2))
+            previous_holidays = [holiday["name"] for holiday in previous_result["Result"]]
+
+            # Extract date and name from question3
+            new_holiday = json.loads(question3)
+            if new_holiday["name"] not in previous_holidays:
+                add = True
+                reason = f'{new_holiday["name"]}並未包含在{month}月的節日清單中。目前{month}月的現有節日包括{", ".join(previous_holidays)}。因此，如果該日被認定為節日，應該將其新增至清單中。'
+            else:
+                add = False
+                reason = f'{new_holiday["name"]}已包含在{month}月的節日清單中。'
+            
+            return json.dumps({"Result": {"add": add, "reason": reason}}, ensure_ascii=False, indent=4)
+        else:
+            return json.dumps({"Result": {"add": False, "reason": "Invalid question format for question2"}}, ensure_ascii=False, indent=4)
+    except Exception as e:
+        return json.dumps({"Result": {"add": False, "reason": str(e)}}, ensure_ascii=False, indent=4)
+#    pass
     
 def generate_hw04(question):
     pass
@@ -135,6 +185,20 @@ def demo(question):
 #    pass
 
 # Test the function
-question = "2024年台灣10月紀念日有哪些?"
-response = generate_hw02(question)
+#question = "2024年台灣10月紀念日有哪些?"
+#question = "請問中華台北的積分是多少"
+#print(f"作業1答案...")
+#response = generate_hw01(question)
+#print(f"作業2答案...")
+#response = generate_hw02(question)
+print(f"作業3答案...")
+question2 = "2024年台灣10月紀念日有哪些?"
+question3 = '{"date": "10-31", "name": "蔣公誕辰紀念日"}'
+result_hw02 = generate_hw02(question2)
+print(f"作業2結果: {result_hw02}")
+new_holiday = json.loads(question3)
+print(f"測試節日: {new_holiday['name']}")
+response = generate_hw03(question2, question3)
 print(response)
+#print(f"作業4答案...")
+#response = generate_hw04(question)
