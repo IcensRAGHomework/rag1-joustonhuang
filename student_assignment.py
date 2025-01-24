@@ -150,7 +150,9 @@ def generate_hw03(question2, question3):
             # Create a RunnableWithMessageHistory to store the previous result
 #            previous_result = json.loads(generate_hw02(question2))
             previous_result = json.loads(generate_hw02(question))
+#            previous_holidays = [holiday["name"] for holiday in previous_result["Result"]]
             previous_holidays = [holiday["name"] for holiday in previous_result["Result"]]
+
 
             # Extract date and name from question3
             new_holiday_json = question3[question3.find("{"):]  # Extract the JSON part
@@ -161,13 +163,29 @@ def generate_hw03(question2, question3):
             else:
                 add = False
                 reason = f'{new_holiday["name"]}已包含在{month}月的節日清單中。目前{month}月的現有節日包括{", ".join(previous_holidays)}。因此，不應該將其新增至清單中。'
-            
-            return json.dumps({"Result": [{"add": add, "reason": reason}]}, ensure_ascii=False, indent=4)
+#            return json.dumps({"Result": {"add": add, "reason": reason}}, ensure_ascii=False, indent=4)
+            result_dict = {
+                "Result": {
+                    "add": add,
+                    "reason": reason
+                }
+            }
+            result_json = json.dumps(result_dict, ensure_ascii=False, indent=4)
+            result_json = result_json.replace('{\n    "Result": {', '{\n    "Result":\n    {')
+            return result_json
         else:
-            return json.dumps({"Result": [{"add": False, "reason": "Invalid question format for question2"}]}, ensure_ascii=False, indent=4)
+            return json.dumps({"Result": {"add": False, "reason": "Invalid question format for question2"}}, ensure_ascii=False, indent=4)
     except Exception as e:
-        return json.dumps({"Result": [{"add": False, "reason": str(e)}]}, ensure_ascii=False, indent=4)
-
+#        return json.dumps({"Result": {"add": False, "reason": str(e)}}, ensure_ascii=False, indent=4)
+        result_dict = {
+            "Result": {
+                "add": False,
+                "reason": str(e)
+            }
+        }
+        result_json = json.dumps(result_dict, ensure_ascii=False, indent=4)
+        result_json = result_json.replace('{\n    "Result": {', '{\n    "Result":\n    {')
+        return result_json
 #    pass
     
 def generate_hw04(question):
