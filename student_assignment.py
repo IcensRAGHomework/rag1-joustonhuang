@@ -163,7 +163,7 @@ def generate_hw03(question2, question3):
 
 
             # Extract date and name from question3
-            new_holiday_json = question3[question3.find("{"):]  # Extract the JSON part
+            new_holiday_json = question3[question3.find("{"):question3.rfind("}")+1]  # Extract the JSON part
             new_holiday = json.loads(new_holiday_json)
             if new_holiday["name"] not in previous_holidays:
                 add = True
@@ -228,8 +228,8 @@ question = "2024年台灣10月紀念日有哪些?"
 #print(response)
 
 question2 = "2024年台灣10月紀念日有哪些?"
-#question3 = '{"date": "10-31", "name": "蔣公誕辰紀念日"}'
-question3 = '{"date": "10-31", "name": "萬聖節"}'
+question3 = '{"date": "10-31", "name": "蔣公誕辰紀念日"}'
+#question3 = '{"date": "10-31", "name": "萬聖節"}'
 #result_hw02 = generate_hw02(question2)
 #print(f"作業2結果: {result_hw02}")
 print(f"作業3答案...")
