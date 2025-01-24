@@ -114,7 +114,7 @@ def generate_hw02(question):
 #    pass
         
 def generate_hw03(question2, question3):
-#    pass
+    pass
     
 def generate_hw04(question):
     pass
