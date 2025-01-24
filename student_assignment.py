@@ -115,6 +115,14 @@ def generate_hw02(question):
         return json.dumps({"Result": [], "error": str(e)}, ensure_ascii=False, indent=4)
 #    pass
 
+# HW03需要的函式
+def number_translate_to_chinese(english_text):
+    llm = use_llm()
+    prompt = f"Translate the number to Traditional Chinese: {english_text}. For example 10 translate to 十, 9 translate to 九. And please only output the Traditional Chinese number."
+    messages = [HumanMessage(content=prompt)]
+    response = llm.invoke(messages)
+    return response.content.strip()
+
 def generate_hw03(question2, question3):
     new_holiday = json.loads(question3)
     prompt_template = get_prompt_template()
@@ -159,10 +167,12 @@ def generate_hw03(question2, question3):
             new_holiday = json.loads(new_holiday_json)
             if new_holiday["name"] not in previous_holidays:
                 add = True
-                reason = f'{new_holiday["name"]}並未包含在{month}月的節日清單中。目前{month}月的現有節日包括{", ".join(previous_holidays)}。因此，如果該日被認定為節日，應該將其新增至清單中。'
+#                reason = f'{new_holiday["name"]}並未包含在{month}月的節日清單中。目前{month}月的現有節日包括{", ".join(previous_holidays)}。因此，如果該日被認定為節日，應該將其新增至清單中。'
+                reason = f'{new_holiday["name"]}並未包含在{number_translate_to_chinese(str(month))}月的節日清單中。目前{number_translate_to_chinese(str(month))}月的現有節日包括{", ".join(previous_holidays)}。因此，如果該日被認定為節日，應該將其新增至清單中。'
+
             else:
                 add = False
-                reason = f'{new_holiday["name"]}已包含在{month}月的節日清單中。目前{month}月的現有節日包括{", ".join(previous_holidays)}。因此，不應該將其新增至清單中。'
+                reason = f'{new_holiday["name"]}已包含在{number_translate_to_chinese(str(month))}月的節日清單中。目前{translate_to_chinese(str(month))}月的現有節日包括{", ".join(previous_holidays)}。因此，不應該將其新增至清單中。'
 #            return json.dumps({"Result": {"add": add, "reason": reason}}, ensure_ascii=False, indent=4)
             result_dict = {
                 "Result": {
