@@ -124,7 +124,9 @@ def number_translate_to_chinese(english_text):
     return response.content.strip()
 
 def generate_hw03(question2, question3):
-    new_holiday = json.loads(question3)
+#    new_holiday = json.loads(question3)
+    new_holiday_json = question3[question3.find("{"):question3.rfind("}")+1]  # Extract the JSON part
+    new_holiday = json.loads(new_holiday_json)
     prompt_template = get_prompt_template()
     store = {}
     history = ChatMessageHistory()
