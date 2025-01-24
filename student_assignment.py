@@ -149,11 +149,10 @@ def generate_hw03(question2, question3):
             month = int(match2.group(2))
             # Create a RunnableWithMessageHistory to store the previous result
             previous_result = json.loads(generate_hw02(question2))
-#            previous_result = json.loads(generate_hw02(question2)["Result"])
-            previous_holidays = [holiday["name"] for holiday in previous_result.get("Result", [])]
+            previous_holidays = [holiday["name"] for holiday in previous_result["Result"]]
 
             # Extract date and name from question3
-            new_holiday = json.loads(question3)
+            new_holiday = json.loads(question3[question3.find('{'):])
             if new_holiday["name"] not in previous_holidays:
                 add = True
                 reason = f'{new_holiday["name"]}並未包含在{month}月的節日清單中。目前{month}月的現有節日包括{", ".join(previous_holidays)}。因此，如果該日被認定為節日，應該將其新增至清單中。'
