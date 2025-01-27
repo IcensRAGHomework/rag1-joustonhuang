@@ -15,9 +15,9 @@ from langchain_core.chat_history import BaseChatMessageHistory # type: ignore
 # from langchain_core.agents import create_openai_functions_agent # type: ignore
 
 #HW04用的函式
-from PIL import Image
-import pytesseract
-from langchain import LangChain
+from PIL import Image, ImageEnhance, ImageFilter # type: ignore
+import pytesseract # type: ignore
+#from langchain import LangChain
 
 gpt_chat_version = 'gpt-4o'
 gpt_config = get_model_configuration(gpt_chat_version)
@@ -206,40 +206,78 @@ def generate_hw03(question2, question3):
 #    pass
 
 # HW04需要的函式
+def preprocess_image(image_path):
+    image = Image.open(image_path)
+    # Convert to grayscale
+    image = image.convert('L')
+    # Enhance contrast
+    enhancer = ImageEnhance.Contrast(image)
+    image = enhancer.enhance(2)
+    # Apply a filter to remove noise
+    image = image.filter(ImageFilter.MedianFilter())
+    # Binarize the image
+    image = image.point(lambda x: 0 if x < 140 else 255, '1')
+    return image
+
 def extract_score_from_text(text, question):
-    # Implement the logic to extract the score from the text based on the question
-    # This is a placeholder implementation
     if "積分" in question:
         team_name = question.split("請問")[1].split("的積分")[0].strip()
         lines = text.split('\n')
         for line in lines:
             if team_name in line:
                 # Extract the score from the line
-                score = int(line.split()[-1])  # Assuming the score is the last element in the line
-                return score
-    return 0
+                try:
+                    # 假設積分是行中的最後一個數字
+                    parts = line.split()
+                    for part in parts:
+                        if part.isdigit():
+                            score = int(part)
+                            return score
+                except ValueError:
+                    continue
+    return None
 
 def generate_hw04(question):
-    # Load the image
-    image = Image.open('baseball.png')
-    
-    # Use OCR to extract text from the image
-    text = pytesseract.image_to_string(image)
-    
-    # Process the extracted text to find the answer to the question
-    # This is a placeholder for the actual logic to parse the text and find the score
-    score = extract_score_from_text(text, question)
-    
-    # Format the result as specified
-    result = {
-        "Result":
-        {
-            "score": score
-        }
-    }
-    
-    return json.dumps(result, ensure_ascii=False)
-#    pass
+    try:
+        # Preprocess the image
+        image = preprocess_image('baseball.png')
+        
+        # Use OCR to extract text from the image with Traditional Chinese language and table recognition
+        text = pytesseract.image_to_string(image, lang='chi_tra', config='--psm 6')
+        
+        # Print the extracted text for debugging
+        # print("Extracted text from image:")
+        # print(text)
+        
+        # Process the extracted text to find the answer to the question
+        score = extract_score_from_text(text, question)
+        
+        if score is not None:
+            # Format the result as specified
+            result = {
+                "Result": {
+                    "score": score
+                }
+            }
+        else:
+            # Use langchain to answer the question based on the extracted text
+            llm = use_llm()
+            message = HumanMessage(content=f"以下是從圖片中提取的文字資料：\n{text}\n請用這樣的方式回答問題：舉例為中華台北，若是問某個隊伍的積分，則是回答積分數字 5498，若是問所屬大洲聯盟，則是只回答 BFA , 若是問排名，則是回答 1 。若是詢問排名第幾的隊伍，則是回答 2：{question}。")
+            response = llm.invoke([message])
+            # Extract the numeric score from the response
+            score = int(''.join(filter(str.isdigit, response.content)))
+            result = {
+                "Result": {
+                    "score": score
+                }
+            }
+        
+        # Ensure the output format matches the expected format
+        result_json = json.dumps(result, ensure_ascii=False, indent=4)
+        result_json = result_json.replace('{\n    "Result": {', '{\n    "Result":\n    {')
+        return result_json
+    except Exception as e:
+        return json.dumps({"Result": {"error": str(e)}}, ensure_ascii=False, indent=4)
     
 def demo(question):
     llm = AzureChatOpenAI(
@@ -275,9 +313,16 @@ print(response)
 #print(f"作業3答案...")
 #response = generate_hw03(question2, question3)
 #print(response)
+<<<<<<< Updated upstream
 
 #print(f"作業4答案...")
 #question = "請問中華台北的積分是多少"
 #response = generate_hw04(question)
 #print(response)
 
+=======
+print(f"作業4答案...")
+question = "請問日本的積分是多少"
+response = generate_hw04(question)
+print(response)
+>>>>>>> Stashed changes
