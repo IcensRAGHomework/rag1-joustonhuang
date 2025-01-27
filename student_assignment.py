@@ -14,6 +14,11 @@ from langchain_community.chat_message_histories import ChatMessageHistory # type
 from langchain_core.chat_history import BaseChatMessageHistory # type: ignore
 # from langchain_core.agents import create_openai_functions_agent # type: ignore
 
+#HW04用的函式
+from PIL import Image
+import pytesseract
+from langchain import LangChain
+
 gpt_chat_version = 'gpt-4o'
 gpt_config = get_model_configuration(gpt_chat_version)
 
@@ -199,9 +204,42 @@ def generate_hw03(question2, question3):
         result_json = result_json.replace('{\n    "Result": {', '{\n    "Result":\n    {')
         return result_json
 #    pass
-    
+
+# HW04需要的函式
+def extract_score_from_text(text, question):
+    # Implement the logic to extract the score from the text based on the question
+    # This is a placeholder implementation
+    if "積分" in question:
+        team_name = question.split("請問")[1].split("的積分")[0].strip()
+        lines = text.split('\n')
+        for line in lines:
+            if team_name in line:
+                # Extract the score from the line
+                score = int(line.split()[-1])  # Assuming the score is the last element in the line
+                return score
+    return 0
+
 def generate_hw04(question):
-    pass
+    # Load the image
+    image = Image.open('baseball.png')
+    
+    # Use OCR to extract text from the image
+    text = pytesseract.image_to_string(image)
+    
+    # Process the extracted text to find the answer to the question
+    # This is a placeholder for the actual logic to parse the text and find the score
+    score = extract_score_from_text(text, question)
+    
+    # Format the result as specified
+    result = {
+        "Result":
+        {
+            "score": score
+        }
+    }
+    
+    return json.dumps(result, ensure_ascii=False)
+#    pass
     
 def demo(question):
     llm = AzureChatOpenAI(
@@ -219,7 +257,7 @@ def demo(question):
 #    pass
 
 # Test the function
-question = "2024年台灣10月紀念日有哪些?"
+#question = "2024年台灣10月紀念日有哪些?"
 
 #print(f"作業1答案...")
 #response = generate_hw01(question)
@@ -229,15 +267,17 @@ question = "2024年台灣10月紀念日有哪些?"
 #response = generate_hw02(question)
 #print(response)
 
-question2 = "2024年台灣10月紀念日有哪些?"
-question3 = '{"date": "10-31", "name": "蔣公誕辰紀念日"}'
+#question2 = "2024年台灣10月紀念日有哪些?"
+#question3 = '{"date": "10-31", "name": "蔣公誕辰紀念日"}'
 #question3 = '{"date": "10-31", "name": "萬聖節"}'
 #result_hw02 = generate_hw02(question2)
 #print(f"作業2結果: {result_hw02}")
-print(f"作業3答案...")
-response = generate_hw03(question2, question3)
+#print(f"作業3答案...")
+#response = generate_hw03(question2, question3)
+#print(response)
+
+print(f"作業4答案...")
+question = "請問中華台北的積分是多少"
+response = generate_hw04(question)
 print(response)
 
-#print(f"作業4答案...")
-#question = "請問中華台北的積分是多少"
-#response = generate_hw04(question)
