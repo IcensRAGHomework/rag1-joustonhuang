@@ -257,11 +257,11 @@ def demo(question):
 #    pass
 
 # Test the function
-#question = "2024年台灣10月紀念日有哪些?"
+question = "2024年台灣10月紀念日有哪些?"
 
-#print(f"作業1答案...")
-#response = generate_hw01(question)
-#print(response)
+print(f"作業1答案...")
+response = generate_hw01(question)
+print(response)
 
 #print(f"作業2答案...")
 #response = generate_hw02(question)
@@ -276,8 +276,8 @@ def demo(question):
 #response = generate_hw03(question2, question3)
 #print(response)
 
-print(f"作業4答案...")
-question = "請問中華台北的積分是多少"
-response = generate_hw04(question)
-print(response)
+#print(f"作業4答案...")
+#question = "請問中華台北的積分是多少"
+#response = generate_hw04(question)
+#print(response)
 
