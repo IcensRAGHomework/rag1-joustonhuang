@@ -240,8 +240,8 @@ def generate_hw04(question):
         text = pytesseract.image_to_string(image, lang='chi_tra', config='--psm 6')
         
         # Print the extracted text for debugging
-        print("Extracted text from image:")
-        print(text)
+        # print("Extracted text from image:")
+        # print(text)
         
         # Process the extracted text to find the answer to the question
         score = extract_score_from_text(text, question)
@@ -262,7 +262,8 @@ def generate_hw04(question):
             score = int(''.join(filter(str.isdigit, response.content)))
             result = {
                 "Result": {
-                    "score": score
+                    "score": score, # Default score
+                    # "error": None,
                 }
             }
         
@@ -271,7 +272,14 @@ def generate_hw04(question):
         result_json = result_json.replace('{\n    "Result": {', '{\n    "Result":\n    {')
         return result_json
     except Exception as e:
-        return json.dumps({"Result": {"error": str(e)}}, ensure_ascii=False, indent=4)
+        result = {
+            "Result": {
+                "score": str(e)
+            }
+        }
+        result_json = json.dumps(result, ensure_ascii=False, indent=4)
+        result_json = result_json.replace('{\n    "Result": {', '{\n    "Result":\n    {')
+        return result_json
 
 def demo(question):
     llm = AzureChatOpenAI(
