@@ -129,7 +129,6 @@ def number_translate_to_chinese(english_text):
     return response.content.strip()
 
 def generate_hw03(question2, question3):
-#    new_holiday = json.loads(question3)
     new_holiday_json = question3[question3.find("{"):question3.rfind("}")+1]  # Extract the JSON part
     new_holiday = json.loads(new_holiday_json)
     prompt_template = get_prompt_template()
@@ -163,9 +162,7 @@ def generate_hw03(question2, question3):
             year = int(match2.group(1))
             month = int(match2.group(2))
             # Create a RunnableWithMessageHistory to store the previous result
-#            previous_result = json.loads(generate_hw02(question2))
             previous_result = json.loads(generate_hw02(question))
-#            previous_holidays = [holiday["name"] for holiday in previous_result["Result"]]
             previous_holidays = [holiday["name"] for holiday in previous_result["Result"]]
 
 
@@ -174,13 +171,11 @@ def generate_hw03(question2, question3):
             new_holiday = json.loads(new_holiday_json)
             if new_holiday["name"] not in previous_holidays:
                 add = True
-#                reason = f'{new_holiday["name"]}並未包含在{month}月的節日清單中。目前{month}月的現有節日包括{", ".join(previous_holidays)}。因此，如果該日被認定為節日，應該將其新增至清單中。'
                 reason = f'{new_holiday["name"]}並未包含在{number_translate_to_chinese(str(month))}月的節日清單中。目前{number_translate_to_chinese(str(month))}月的現有節日包括{", ".join(previous_holidays)}。因此，如果該日被認定為節日，應該將其新增至清單中。'
 
             else:
                 add = False
                 reason = f'{new_holiday["name"]}已包含在{number_translate_to_chinese(str(month))}月的節日清單中。目前{number_translate_to_chinese(str(month))}月的現有節日包括{", ".join(previous_holidays)}。因此，不應該將其新增至清單中。'
-#            return json.dumps({"Result": {"add": add, "reason": reason}}, ensure_ascii=False, indent=4)
             result_dict = {
                 "Result": {
                     "add": add,
@@ -193,7 +188,6 @@ def generate_hw03(question2, question3):
         else:
             return json.dumps({"Result": {"add": False, "reason": "Invalid question format for question2"}}, ensure_ascii=False, indent=4)
     except Exception as e:
-#        return json.dumps({"Result": {"add": False, "reason": str(e)}}, ensure_ascii=False, indent=4)
         result_dict = {
             "Result": {
                 "add": False,
@@ -246,8 +240,8 @@ def generate_hw04(question):
         text = pytesseract.image_to_string(image, lang='chi_tra', config='--psm 6')
         
         # Print the extracted text for debugging
-        # print("Extracted text from image:")
-        # print(text)
+        print("Extracted text from image:")
+        print(text)
         
         # Process the extracted text to find the answer to the question
         score = extract_score_from_text(text, question)
@@ -278,7 +272,7 @@ def generate_hw04(question):
         return result_json
     except Exception as e:
         return json.dumps({"Result": {"error": str(e)}}, ensure_ascii=False, indent=4)
-    
+
 def demo(question):
     llm = AzureChatOpenAI(
             model=gpt_config['model_name'],
@@ -295,9 +289,9 @@ def demo(question):
 #    pass
 
 # Test the function
-question = "2024年台灣10月紀念日有哪些?"
-print(f"作業1答案...")
-response = generate_hw01(question)
+#question = "2024年台灣10月紀念日有哪些?"
+#print(f"作業1答案...")
+#response = generate_hw01(question)
 
 #print(f"作業2答案...")
 #response = generate_hw02(question)
@@ -310,9 +304,9 @@ response = generate_hw01(question)
 #print(f"作業3答案...")
 #response = generate_hw03(question2, question3)
 
-#print(f"作業4答案...")
-#question = "請問中華台北的積分是多少"
-#response = generate_hw04(question)
+print(f"作業4答案...")
+question = "請問中華台北的積分是多少"
+response = generate_hw04(question)
 
 #print(f"作業4答案...")
 #question = "請問中華台北的積分是多少"
